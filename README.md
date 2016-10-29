@@ -2,9 +2,9 @@
 
 **Repository Patter with Dapper and MongoDB**
 
-O objetivo é mostrar como usar o **Repository Pattern** com uma implementação e acessar múltiplos banco de dados. Na verdade a sura regra de negócio não precisa saber onde estão armazenados os dados e a ideia do **Repository Pattern** é alternar entre os banco de dados sem mudar todo o seu código. 
+O objetivo é mostrar como usar o **Repository Pattern** para acessar múltiplos banco de dados. Na verdade a sua regra de negócio não precisa saber onde estão armazenados os dados e a ideia do **Repository Pattern** é alternar entre os banco de dados sem mudar todo o seu código fonte. 
 
-Aqui eu mostro uma implementação de acesso ao **SQL Server** usando **Dapper** e uma outra usando o **MongoDB** tudo através das bibliotecas do **C#**.
+Aqui eu mostro uma implementação de acesso ao **SQL Server** usando **Dapper** e uma outra usando o **MongoDB**.
 
 ---
 
@@ -14,16 +14,16 @@ O que há no código fonte?
 #### <i class="icon-file"></i> FSL.RepositoryPatternWithDapperAndMongoDB
 
 - Solution do Visual Studio para facilitar;
-- Biblioteca do **Dapper**;
-- Driver para acesso ao **MongoDB**;
-- **MVC 5.2.3** e **Ninject** para Dependency Injection;
+- Biblioteca **Dapper** do StackExchange;
+- Driver oficial .NET para acesso ao **MongoDB**;
+- **MVC 5.2.3** e **Ninject** para **Dependency Injection**;
 - Classes que compõem a solução; 
 
 > **Observação:**
 
 > - Se você quiser rodar a aplicação, você talvez precise instalar o **MongoDB** na sua máquina. Faça download dele [aqui][1]. Você pode também informar uma conexão remota ao **MongoDB** se preferir. A mesma coisa server para o **SQL Server**.
-> - O uso de **Dapper** e **MongoDB** é apenas demonstrativo, porém você pode criar a sua solução com outro banco de dados ou outras bibliotecas como **Entity Framework**.
-> - Eu não explico como instalar e configurar o **MongoDB**, mas basicamente instale e execute o serviço do banco de dados (via commandline). Tem uma ferramenta legal para gerenciar o banco de dados, criar collections e manipular dados. A ferramenta é **Robomongo**, fala download [aqui][4]
+> - O uso de **Dapper** e **MongoDB** é apenas demonstrativo, porém você pode criar a sua solução com outro banco de dados ou outras bibliotecas como **Entity Framework** usando a mesma lógica utilizada aqui.
+> - Eu não explico como instalar e configurar o **MongoDB**, mas basicamente instale e execute o serviço do banco de dados (via commandline). Tem uma ferramenta legal para gerenciar o banco de dados, criar collections e manipular dados que é **Robomongo**, faça download dela [aqui][4]
 
 ---
 
@@ -40,9 +40,9 @@ Repositório-->Regra: Repositório retorna os dados
 
 **PREMISSAS:**
 - Eu, regra de negócios não quero saber onde estão armazenados os dados;
-- Se eu quiser mudar onde os dados estão armazenados tenho que modificar o mínimo possível o meu código fonte, mas não posso mudar a minha regra de negócios.
+- Se eu quiser mudar onde os dados estão armazenados tenho que modificar o mínimo possível o meu código fonte, mas não posso mudar a minha regra de negócio.
 - Eu quero configurar **Dependency Injection** para controlar o **Repository Pattern**.
-- Eu quero ser possível chamar dinamicamente um ou outro **Repository Pattern** (apenas exemplificativo).
+- Eu quero ser possível forçar a chamada de um ou outro repositório (apenas exemplificativo).
 
 
 Explicando...
@@ -83,6 +83,27 @@ private static void RegisterServices(IKernel kernel)
 ```
 
 - O script para criação da tabela no SQL e carregando dos dados está em **DatabaseScripts/SqlServer.sql**.
+- Tudo começa pela HomeController e Action Index. Não há nada em tela.
+
+```csharp
+public async Task<ActionResult> Index()
+{
+	// Exemplos de chamadas paralelas usando diferentes repositorios
+
+    // Servico se vira para achar o repositorio
+    var calculoA = TaxaService.CalcularTaxa(1);
+
+    // Servico recebe o repositorio via DI
+    var calculoB = TaxaService.CalcularTaxa(1, _repository);
+
+    // Servico recebe o repositorio especifico do mongodb
+    var calculoC = TaxaService.CalcularTaxa(1, new MongoDBTaxaRepository());
+
+    await Task.WhenAll(calculoA, calculoB, calculoC);
+            
+    return View();
+}
+```
 
 ----------
 
