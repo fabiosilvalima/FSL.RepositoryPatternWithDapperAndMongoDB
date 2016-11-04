@@ -2,55 +2,54 @@
 
 **Repository Patter with Dapper and MongoDB**
 
-O objetivo é mostrar como usar o **Repository Pattern** para acessar múltiplos banco de dados. Na verdade a sua regra de negócio não precisa saber onde estão armazenados os dados e a ideia do **Repository Pattern** é alternar entre os banco de dados sem mudar todo o seu código fonte. 
+The gol is to show how to use **Repository Pattern** to access multiple databases. Our business class does not need to know where is the database or wich one is. Finally, we don't need to perform changes to our business class when changing the data class.
 
-Aqui eu mostro uma implementação de acesso ao **SQL Server** usando **Dapper** e uma outra usando o **MongoDB**.
+I will  show an implementation of data acces using **SQL Server** with **Dapper** and another one with **MongoDB** ASP.NET oficial driver.
 
 ---
 
-O que há no código fonte?
+What is in the source code?
 ---
 
 #### <i class="icon-file"></i> FSL.RepositoryPatternWithDapperAndMongoDB
 
-- Solution do Visual Studio para facilitar;
-- Biblioteca **Dapper** do StackExchange;
-- Driver oficial .NET para acesso ao **MongoDB**;
-- **MVC 5.2.3** e **Ninject** para **Dependency Injection**;
-- Classes que compõem a solução; 
+- Visual Studio solution file;
+- StackExchange **Dapper** library;
+- .NET **MongoDB** oficial driver;
+- **MVC 5.2.3** and **Ninject** for **Dependency Injection**;
+- Classes for our solution; 
 
-> **Observação:**
+> **Remarks:**
 
-> - Se você quiser rodar a aplicação, você talvez precise instalar o **MongoDB** na sua máquina. Faça download dele [aqui][1]. Você pode também informar uma conexão remota ao **MongoDB** se preferir. A mesma coisa server para o **SQL Server**.
-> - O uso de **Dapper** e **MongoDB** é apenas demonstrativo, porém você pode criar a sua solução com outro banco de dados ou outras bibliotecas como **Entity Framework** usando a mesma lógica utilizada aqui.
-> - Eu não explico como instalar e configurar o **MongoDB**, mas basicamente instale e execute o serviço do banco de dados (via commandline). Tem uma ferramenta legal para gerenciar o banco de dados, criar collections e manipular dados que é **Robomongo**, faça download dela [aqui][4]
+> - If you want to run that application you will need install **MongoDB** client and server in your machine. Download the installer [here][1]. You can configure a remote connection to **MongoDB** or **SQL Server**.
+> - I use **Dapper** to SQL Server and **MongoDB** just as exemplification of Repository Pattern but you can create your own implementation for others data access libraries like **Entity Framework**.
+> - I do not show how to install **MongoDB**. Basically you will install and run database service using commandline. There is a lot of client tools to connect and manage **MongoDB** database. I suggest you install **Robomongo**, download installer [here][4].
 
 ---
 
-Qual a proposta da solução?
+What is the goal?
 ---
 
-Eu tenho uma regra de negócio que busca algumas taxas em repositório de forma que eu tenha que fazer alguns cálculos. Não importa onde esses dados estão armazenados, simplesmente vá buscar esses dados e me retorne.
+I have a business logic that calculates something with some taxes/factors that are stored in database. Does not matter where the data are, just go get it e return them.
 
 ```sequence
-Regra->Repositório: Regra de negócio solicita dados
-Note right of Repositório: Repository Pattern
-Repositório-->Regra: Repositório retorna os dados
+Rule->Repository: Business calls repository
+Note right of Repository: Repository Pattern
+Repository-->Rule: Repository returns data
 ```
 
 **PREMISSAS:**
-- Eu, regra de negócios não quero saber onde estão armazenados os dados;
-- Se eu quiser mudar onde os dados estão armazenados tenho que modificar o mínimo possível o meu código fonte, mas não posso mudar a minha regra de negócio.
-- Eu quero configurar **Dependency Injection** para controlar o **Repository Pattern**.
-- Eu quero ser possível forçar a chamada de um ou outro repositório (apenas exemplificativo).
+- Does not matter where the data are;
+- I must perform a little change to get the data in another database.
+- I want to configure **Dependency Injection** to handle **Repository Pattern**.
 
 
-Explicando...
+Explaining...
 ---
 
-- A tabela no SQL Server chama-se **Taxas**. 
-- A collection no MongoDB chama-se **Taxas**.
-- O ID da conexão com o MongoDB é **localhost**. Onde está:
+- The SQL Server table name is **Taxas**. 
+- The MongoDB collection name is **Taxas**.
+- The connection ID of MongoDB is **localhost**. It's located at:
 
 **Repository/MongoDBRepository.cs**
 ```csharp
@@ -61,7 +60,7 @@ public MongoDBRepository()
 }
 ```
 
-- O ID da conexão com o SQL Server é **sqlserver** e a string de conexão está no web.config. Onde está:
+- The SQL Server connection ID is  **sqlserver** and connection string is on web.config. It's located at:
 
 **Repository/SqlServerRepository.cs**
 ```csharp
@@ -72,7 +71,7 @@ public SqlServerRepository()
 }
 ```
 
-- Para **Dependency Injection** foi configurado a implementação do Repositório usando Dapper. Onde está:
+- I configured **Dependency Injection** to Dapper Sql Server. It's located at:
 
 **App_Start/NinjectWebCommon.cs**
 ```csharp
@@ -82,21 +81,19 @@ private static void RegisterServices(IKernel kernel)
 }   
 ```
 
-- O script para criação da tabela no SQL e carregando dos dados está em **DatabaseScripts/SqlServer.sql**.
-- Tudo começa pela HomeController e Action Index. Não há nada em tela.
+- The SQL Server schema database and data are located at **DatabaseScripts/SqlServer.sql**.
+- The main code is located at HomeController and Action Index. 
 
 ```csharp
 public async Task<ActionResult> Index()
 {
-	// Exemplos de chamadas paralelas usando diferentes repositorios
-
-    // Servico se vira para achar o repositorio
+    // Service handle the repository internally.
     var calculoA = TaxaService.CalcularTaxa(1);
 
-    // Servico recebe o repositorio via DI
+    // Passing a DI repository to service
     var calculoB = TaxaService.CalcularTaxa(1, _repository);
 
-    // Servico recebe o repositorio especifico do mongodb
+    // Passing explicitally MongoDB Repository to service
     var calculoC = TaxaService.CalcularTaxa(1, new MongoDBTaxaRepository());
 
     await Task.WhenAll(calculoA, calculoB, calculoC);
@@ -107,18 +104,18 @@ public async Task<ActionResult> Index()
 
 ----------
 
-Referências:
+References:
 ---
 
-- StackExchange **Dapper** download e tutoriais [aqui][1];
-- **MongoDB** download e tutoriais [aqui][2];
-- **Ninject** tutoriais [aqui][3];
-- **Robomongo** download e tutoriais [aqui][4];
+- StackExchange **Dapper** download e tutoriais [here][1];
+- **MongoDB** download e tutoriais [here][2];
+- **Ninject** tutoriais [here][3];
+- **Robomongo** download e tutoriais [here][4];
 
-Lincença:
+Licence:
 ---
 
-- [Licença MIT][4]
+- [Licence MIT][4]
 
 
   [1]: https://github.com/StackExchange/dapper-dot-net
