@@ -1,10 +1,15 @@
 # FSL.RepositoryPatternWithDapperAndMongoDB
 
-**Repository Pattern with Dapper SQL and MongoDB**
+**Repository Patter with Dapper and MongoDB**
 
 The gol is to show how to use **Repository Pattern** to access multiple databases. Our business class does not need to know where is the database or wich one is. Finally, we don't need to perform changes to our business class when changing the data class.
 
 I will  show an implementation of data acces using **SQL Server** with **Dapper** and another one with **MongoDB** ASP.NET oficial driver.
+
+> **LIVE DEMO:**
+> 
+http://codefinal.com/FSL.RepositoryPatternWithDapperAndMongoDB/
+
 
 ---
 
@@ -38,7 +43,7 @@ Note right of Repository: Repository Pattern
 Repository-->Rule: Repository returns data
 ```
 
-**PREMISSAS:**
+**Assumptions:**
 - Does not matter where the data are;
 - I must perform a little change to get the data in another database.
 - I want to configure **Dependency Injection** to handle **Repository Pattern**.
