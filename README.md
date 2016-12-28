@@ -4,6 +4,8 @@
 
 The gol is to show how to use **Repository Pattern** to access multiple databases. Our business class does not need to know where is the database or wich one is. Finally, we don't need to perform changes to our business class when changing the data class.
 
+![enter image description here](https://fabiosilvalima.files.wordpress.com/2016/10/repository-pattern.png)
+
 I will  show an implementation of data acces using **SQL Server** with **Dapper** and another one with **MongoDB** ASP.NET oficial driver.
 
 > **LIVE DEMO:**
