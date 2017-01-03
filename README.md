@@ -10,8 +10,13 @@ I will  show an implementation of data acces using **SQL Server** with **Dapper*
 
 > **LIVE DEMO:**
 > 
-http://codefinal.com/FSL.RepositoryPatternWithDapperAndMongoDB/
+> http://codefinal.com/FSL.RepositoryPatternWithDapperAndMongoDB/
 
+> **FULL ARTICLE:**
+>
+> English: https://fabiosilvalima.net/2016/10/28/repository-pattern-with-dapper-sql-and-mongodb/
+>
+> Português: https://fabiosilvalima.com.br/2016/10/28/repository-pattern-com-dapper-sql-e-mongodb/
 
 ---
 
