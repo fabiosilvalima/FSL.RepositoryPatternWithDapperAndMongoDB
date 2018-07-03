@@ -2,7 +2,7 @@
 
 **Repository Patter with Dapper and MongoDB**
 
-The gol is to show how to use **Repository Pattern** to access multiple databases. Our business class does not need to know where is the database or wich one is. Finally, we don't need to perform changes to our business class when changing the data class.
+The goal is to show how to use **Repository Pattern** to access multiple databases. Our business class does not need to know where is the database or wich one is. Finally, we don't need to perform changes to our business class when changing the data class.
 
 ![enter image description here](https://fabiosilvalima.net/wp-content/uploads/2017/01/fabiosilvalima-repository-pattern-com-dapper-sql-e-mongodb.jpg)
 
